@@ -23,13 +23,14 @@ jobs:
         with:
           gradle-version: 8.7
 
-      - name: Prepare Android Project & Dependencies
+      - name: Prepare Android Project & Resources
         run: |
           mkdir -p app/src/main/java/com/vidhya/focuslock
           mkdir -p app/src/main/res/values
           mkdir -p app/src/main/res/layout
           mkdir -p app/src/main/res/drawable
           mkdir -p app/src/main/res/xml
+          mkdir -p app/src/main/res/anim
           mkdir -p app/src/main/res/mipmap-anydpi-v26
 
           # 1. Map scattered files if uploaded in subfolders
@@ -40,7 +41,27 @@ jobs:
           find . -name "*service_config.xml" -o -name "*admin_receiver.xml" | while read -r f; do cp "$f" app/src/main/res/xml/ 2>/dev/null || true; done
           find . -name "AndroidManifest.xml" -not -path "./app/src/main/*" -exec cp {} app/src/main/AndroidManifest.xml \; 2>/dev/null || true
 
-          # 2. Guarantee core XML files
+          # 2. Guarantee Animation XML files
+          cat << 'EOF' > app/src/main/res/anim/butterfly_float.xml
+          <set xmlns:android="http://schemas.android.com/apk/res/android" android:interpolator="@android:anim/linear_interpolator" android:repeatMode="reverse" android:repeatCount="infinite">
+              <translate android:fromXDelta="0" android:toXDelta="10dp" android:fromYDelta="0" android:toYDelta="-15dp" android:duration="1200" />
+          </set>
+          EOF
+
+          cat << 'EOF' > app/src/main/res/anim/sparkle_pulse.xml
+          <set xmlns:android="http://schemas.android.com/apk/res/android" android:repeatMode="reverse" android:repeatCount="infinite">
+              <scale android:fromXScale="0.8" android:toXScale="1.2" android:fromYScale="0.8" android:toYScale="1.2" android:pivotX="50%" android:pivotY="50%" android:duration="800" />
+              <alpha android:fromAlpha="0.6" android:toAlpha="1.0" android:duration="800" />
+          </set>
+          EOF
+
+          cat << 'EOF' > app/src/main/res/anim/plant_breeze.xml
+          <set xmlns:android="http://schemas.android.com/apk/res/android" android:repeatMode="reverse" android:repeatCount="infinite">
+              <rotate android:fromDegrees="-3" android:toDegrees="3" android:pivotX="50%" android:pivotY="100%" android:duration="1500" />
+          </set>
+          EOF
+
+          # 3. Guarantee core XML files
           cat << 'EOF' > app/src/main/res/values/strings.xml
           <resources>
               <string name="app_name">FocusLock</string>
