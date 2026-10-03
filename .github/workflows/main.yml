@@ -23,17 +23,11 @@ jobs:
         with:
           gradle-version: 8.7
 
-      - name: Prepare Latest FocusLock 3.5 App & Resources
+      - name: Auto-Structure Ocean Sanctuary App
         run: |
           mkdir -p app/src/main/java/com/vidhya/focuslock
-          mkdir -p app/src/main/res/values
-          mkdir -p app/src/main/res/layout
-          mkdir -p app/src/main/res/drawable
-          mkdir -p app/src/main/res/xml
-          mkdir -p app/src/main/res/anim
-          mkdir -p app/src/main/res/mipmap-anydpi-v26
+          mkdir -p app/src/main/res/values app/src/main/res/layout app/src/main/res/drawable app/src/main/res/xml app/src/main/res/anim app/src/main/res/mipmap-anydpi-v26
 
-          # 1. Map all scattered files if uploaded in subfolders
           find . -name "*.kt" -not -path "./app/src/main/java/*" -exec cp {} app/src/main/java/com/vidhya/focuslock/ \; 2>/dev/null || true
           find . -name "activity_*.xml" -o -name "item_*.xml" | while read -r f; do cp "$f" app/src/main/res/layout/ 2>/dev/null || true; done
           find . -name "bg_*.xml" -o -name "ic_*.xml" | while read -r f; do cp "$f" app/src/main/res/drawable/ 2>/dev/null || true; done
@@ -41,7 +35,7 @@ jobs:
           find . -name "*service_config.xml" -o -name "*admin_receiver.xml" | while read -r f; do cp "$f" app/src/main/res/xml/ 2>/dev/null || true; done
           find . -name "AndroidManifest.xml" -not -path "./app/src/main/*" -exec cp {} app/src/main/AndroidManifest.xml \; 2>/dev/null || true
 
-          # 2. Guarantee Animation XML files
+          # Guarantee Animation XML files
           cat << 'EOF' > app/src/main/res/anim/butterfly_float.xml
           <set xmlns:android="http://schemas.android.com/apk/res/android" android:interpolator="@android:anim/linear_interpolator" android:repeatMode="reverse" android:repeatCount="infinite">
               <translate android:fromXDelta="0" android:toXDelta="10dp" android:fromYDelta="0" android:toYDelta="-15dp" android:duration="1200" />
@@ -61,32 +55,29 @@ jobs:
           </set>
           EOF
 
-          # 3. Guarantee Core Strings and Themes for Latest 3.5.0 Edition
           cat << 'EOF' > app/src/main/res/values/strings.xml
           <resources>
-              <string name="app_name">FocusLock Underwater Sanctuary</string>
+              <string name="app_name">FocusLock Ocean Sanctuary</string>
           </resources>
           EOF
 
           cat << 'EOF' > app/src/main/res/values/colors.xml
           <resources>
               <color name="white">#FFFFFFFF</color>
-              <color name="emerald_primary">#10B981</color>
-              <color name="emerald_dark">#047857</color>
-              <color name="bg_dark">#0F172A</color>
+              <color name="emerald_primary">#06B6D4</color>
+              <color name="emerald_dark">#0C4A6E</color>
+              <color name="bg_dark">#030712</color>
           </resources>
           EOF
 
           cat << 'EOF' > app/src/main/res/values/themes.xml
           <resources>
               <style name="Theme.FocusLock" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-                  <item name="colorPrimary">@color/emerald_primary</item>
-                  <item name="colorSecondary">@color/emerald_primary</item>
-                  <item name="android:statusBarColor">@color/bg_dark</item>
+                  <item name="colorPrimary">#06B6D4</item>
+                  <item name="colorSecondary">#38BDF8</item>
+                  <item name="android:statusBarColor">#030712</item>
               </style>
-              <style name="Theme.FocusLock.Fullscreen" parent="Theme.FocusLock">
-                  <item name="android:windowFullscreen">true</item>
-              </style>
+              <style name="Theme.FocusLock.Fullscreen" parent="Theme.FocusLock"><item name="android:windowFullscreen">true</item></style>
               <style name="Theme.FocusLock.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog" />
           </resources>
           EOF
@@ -102,49 +93,31 @@ jobs:
           EOF
 
           cat << 'EOF' > app/src/main/res/xml/device_admin_receiver.xml
-          <device-admin xmlns:android="http://schemas.android.com/apk/res/android">
-              <uses-policies>
-                  <force-lock />
-              </uses-policies>
-          </device-admin>
+          <device-admin xmlns:android="http://schemas.android.com/apk/res/android"><uses-policies><force-lock /></uses-policies></device-admin>
           EOF
 
           cat << 'EOF' > app/src/main/res/drawable/bg_card.xml
-          <shape xmlns:android="http://schemas.android.com/apk/res/android"><solid android:color="#131B2E"/><corners android:radius="16dp"/><stroke android:width="1dp" android:color="#1E293B"/></shape>
+          <shape xmlns:android="http://schemas.android.com/apk/res/android"><solid android:color="#07192C"/><corners android:radius="16dp"/><stroke android:width="1dp" android:color="#0E3A5D"/></shape>
           EOF
 
           cat << 'EOF' > app/src/main/res/drawable/bg_search.xml
-          <shape xmlns:android="http://schemas.android.com/apk/res/android"><solid android:color="#0F172A"/><corners android:radius="12dp"/><stroke android:width="1dp" android:color="#334155"/></shape>
+          <shape xmlns:android="http://schemas.android.com/apk/res/android"><solid android:color="#030E1B"/><corners android:radius="12dp"/><stroke android:width="1dp" android:color="#0C4A6E"/></shape>
           EOF
 
           cat << 'EOF' > app/src/main/res/drawable/bg_pill.xml
-          <shape xmlns:android="http://schemas.android.com/apk/res/android"><solid android:color="#064E3B"/><corners android:radius="20dp"/></shape>
+          <shape xmlns:android="http://schemas.android.com/apk/res/android"><solid android:color="#0C4A6E"/><corners android:radius="20dp"/></shape>
           EOF
 
           cat << 'EOF' > app/src/main/res/drawable/ic_launcher_foreground.xml
-          <vector xmlns:android="http://schemas.android.com/apk/res/android"
-              android:width="108dp"
-              android:height="108dp"
-              android:viewportWidth="108"
-              android:viewportHeight="108">
-              <path
-                  android:fillColor="#10B981"
-                  android:pathData="M30,30h48v48h-48z" />
-          </vector>
+          <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108"><path android:fillColor="#38BDF8" android:pathData="M30,30h48v48h-48z" /></vector>
           EOF
 
           cat << 'EOF' > app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
-          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-              <background android:drawable="@color/emerald_dark" />
-              <foreground android:drawable="@drawable/ic_launcher_foreground" />
-          </adaptive-icon>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@color/emerald_dark" /><foreground android:drawable="@drawable/ic_launcher_foreground" /></adaptive-icon>
           EOF
 
           cat << 'EOF' > app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
-          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-              <background android:drawable="@color/emerald_dark" />
-              <foreground android:drawable="@drawable/ic_launcher_foreground" />
-          </adaptive-icon>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@color/emerald_dark" /><foreground android:drawable="@drawable/ic_launcher_foreground" /></adaptive-icon>
           EOF
 
           find . -name "*.xml" -exec sed -i 's/^[ \t]*<?xml/<?xml/' {} + 2>/dev/null || true
@@ -158,18 +131,11 @@ jobs:
 
           cat << 'EOF' > settings.gradle.kts
           pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
+              repositories { google(); mavenCentral(); gradlePluginPortal() }
           }
           dependencyResolutionManagement {
               repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
+              repositories { google(); mavenCentral() }
           }
           rootProject.name = "FocusLock"
           include(":app")
@@ -186,38 +152,26 @@ jobs:
               id("com.android.application")
               id("org.jetbrains.kotlin.android")
           }
-
           android {
               namespace = "com.vidhya.focuslock"
               compileSdk = 34
-
               defaultConfig {
                   applicationId = "com.vidhya.focuslock"
                   minSdk = 26
                   targetSdk = 34
                   versionCode = 4
-                  versionName = "3.5.0-UnderwaterEcosystem"
+                  versionName = "3.5.0-OceanSanctuary"
               }
-
               buildTypes {
-                  release {
-                      isMinifyEnabled = false
-                  }
-                  debug {
-                      isMinifyEnabled = false
-                  }
+                  release { isMinifyEnabled = false }
+                  debug { isMinifyEnabled = false }
               }
-
               compileOptions {
                   sourceCompatibility = JavaVersion.VERSION_17
                   targetCompatibility = JavaVersion.VERSION_17
               }
-
-              kotlinOptions {
-                  jvmTarget = "17"
-              }
+              kotlinOptions { jvmTarget = "17" }
           }
-
           dependencies {
               implementation("androidx.core:core-ktx:1.13.1")
               implementation("androidx.appcompat:appcompat:1.7.0")
@@ -231,9 +185,9 @@ jobs:
       - name: Build Debug APK
         run: gradle :app:assembleDebug --stacktrace --no-daemon
 
-      - name: Upload Current Version APK
+      - name: Upload Current Ocean Sanctuary APK
         uses: actions/upload-artifact@v4
         with:
-          name: FocusLock-v3.5.0-Current-Underwater-Sanctuary-APK
+          name: FocusLock-v3.5.0-OceanSanctuary-APK
           path: app/build/outputs/apk/debug/*.apk
           retention-days: 14
