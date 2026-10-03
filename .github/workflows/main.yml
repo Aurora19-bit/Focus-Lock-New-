@@ -23,19 +23,34 @@ jobs:
         with:
           gradle-version: 8.7
 
-      - name: Auto-Structure Ocean Sanctuary App
+      - name: Overwrite & Enforce 100% Deep Ocean Sanctuary Theme
         run: |
           mkdir -p app/src/main/java/com/vidhya/focuslock
           mkdir -p app/src/main/res/values app/src/main/res/layout app/src/main/res/drawable app/src/main/res/xml app/src/main/res/anim app/src/main/res/mipmap-anydpi-v26
 
+          # 1. Transform any existing forest files to Ocean Sanctuary in-place
+          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/Forest/Ocean/g' {} + 2>/dev/null || true
+          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/forest/ocean/g' {} + 2>/dev/null || true
+          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/Garden/Ocean/g' {} + 2>/dev/null || true
+          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/garden/ocean/g' {} + 2>/dev/null || true
+          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/🌲/🌊/g' {} + 2>/dev/null || true
+          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/🌸/🪸/g' {} + 2>/dev/null || true
+          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/Ancient Oak/Blue Whale/g' {} + 2>/dev/null || true
+          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/Alpine Pine/Coral Dolphin/g' {} + 2>/dev/null || true
+          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/Weeping Willow/Sea Turtle/g' {} + 2>/dev/null || true
+          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/petDog1/marineTurtle/g' {} + 2>/dev/null || true
+          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/butterfly1/marineJellyfish/g' {} + 2>/dev/null || true
+          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/tabBtnGarden/tabBtnOcean/g' {} + 2>/dev/null || true
+          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/viewGardenTab/viewOceanTab/g' {} + 2>/dev/null || true
+
+          # 2. Map files into place
           find . -name "*.kt" -not -path "./app/src/main/java/*" -exec cp {} app/src/main/java/com/vidhya/focuslock/ \; 2>/dev/null || true
           find . -name "activity_*.xml" -o -name "item_*.xml" | while read -r f; do cp "$f" app/src/main/res/layout/ 2>/dev/null || true; done
           find . -name "bg_*.xml" -o -name "ic_*.xml" | while read -r f; do cp "$f" app/src/main/res/drawable/ 2>/dev/null || true; done
-          find . -name "strings.xml" -o -name "colors.xml" -o -name "themes.xml" | while read -r f; do cp "$f" app/src/main/res/values/ 2>/dev/null || true; done
           find . -name "*service_config.xml" -o -name "*admin_receiver.xml" | while read -r f; do cp "$f" app/src/main/res/xml/ 2>/dev/null || true; done
           find . -name "AndroidManifest.xml" -not -path "./app/src/main/*" -exec cp {} app/src/main/AndroidManifest.xml \; 2>/dev/null || true
 
-          # Guarantee Animation XML files
+          # 3. Write Ocean Sanctuary Animation XMLs
           cat << 'EOF' > app/src/main/res/anim/butterfly_float.xml
           <set xmlns:android="http://schemas.android.com/apk/res/android" android:interpolator="@android:anim/linear_interpolator" android:repeatMode="reverse" android:repeatCount="infinite">
               <translate android:fromXDelta="0" android:toXDelta="10dp" android:fromYDelta="0" android:toYDelta="-15dp" android:duration="1200" />
@@ -55,6 +70,7 @@ jobs:
           </set>
           EOF
 
+          # 4. Write Ocean Sanctuary Values & Colors
           cat << 'EOF' > app/src/main/res/values/strings.xml
           <resources>
               <string name="app_name">FocusLock Ocean Sanctuary</string>
@@ -122,6 +138,7 @@ jobs:
 
           find . -name "*.xml" -exec sed -i 's/^[ \t]*<?xml/<?xml/' {} + 2>/dev/null || true
 
+          # 5. Write build.gradle.kts and settings.gradle.kts
           cat << 'EOF' > build.gradle.kts
           plugins {
               id("com.android.application") version "8.5.2" apply false
@@ -159,7 +176,7 @@ jobs:
                   applicationId = "com.vidhya.focuslock"
                   minSdk = 26
                   targetSdk = 34
-                  versionCode = 4
+                  versionCode = 5
                   versionName = "3.5.0-OceanSanctuary"
               }
               buildTypes {
@@ -185,9 +202,9 @@ jobs:
       - name: Build Debug APK
         run: gradle :app:assembleDebug --stacktrace --no-daemon
 
-      - name: Upload Current Ocean Sanctuary APK
+      - name: Upload Ocean Sanctuary APK
         uses: actions/upload-artifact@v4
         with:
-          name: FocusLock-v3.5.0-OceanSanctuary-APK
+          name: FocusLock-v3.5.0-DeepOceanSanctuary-APK
           path: app/build/outputs/apk/debug/*.apk
           retention-days: 14
