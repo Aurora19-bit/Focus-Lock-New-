@@ -1,17 +1,13 @@
-name: Build FocusLock APK
+name: Build Android FocusLock APK
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+    branches: [ "**" ]
   workflow_dispatch:
 
 jobs:
   build:
-    name: Build FocusLock Android APK
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -19,31 +15,73 @@ jobs:
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
-          java-version: 17
-          distribution: temurin
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Setup Gradle 8.7
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.7
 
-      # Configures Google & Maven repositories cleanly without EOF blocks
-      - name: Configure Root Gradle Files
+      - name: Configure Android Project
         run: |
-          printf "pluginManagement {\n    repositories {\n        google()\n        mavenCentral()\n        gradlePluginPortal()\n    }\n}\ndependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)\n    repositories {\n        google()\n        mavenCentral()\n    }\n}\nrootProject.name = \"FocusLock\"\ninclude(\":app\")\n" > settings.gradle.kts
-          printf "plugins {\n    id(\"com.android.application\") version \"8.5.2\" apply false\n    id(\"org.jetbrains.kotlin.android\") version \"1.9.24\" apply false\n}\n" > build.gradle.kts
+          echo "==> Verifying Android project structure..."
+          
+          # If project was uploaded into a subfolder, bring it to root
+          if [ ! -d "app" ] && [ -d "FocusLock/app" ]; then
+            cp -r FocusLock/* .
+          fi
+          
+          # Ensure gradlew executable if present
+          if [ -f "gradlew" ]; then
+            chmod +x gradlew
+          fi
 
-      # Compiles the FocusLock Debug APK
+          # Ensure root build.gradle.kts exists with correct plugin declarations
+          cat << 'EOF' > build.gradle.kts
+          plugins {
+              id("com.android.application") version "8.5.2" apply false
+              id("org.jetbrains.kotlin.android") version "1.9.24" apply false
+          }
+          EOF
+
+          # Ensure settings.gradle.kts exists with required repository endpoints
+          cat << 'EOF' > settings.gradle.kts
+          pluginManagement {
+              repositories {
+                  google {
+                      content {
+                          includeGroupByRegex("com\\.android.*")
+                          includeGroupByRegex("com\\.google.*")
+                          includeGroupByRegex("androidx.*")
+                      }
+                  }
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = "FocusLock"
+          include(":app")
+          EOF
+
+          # Clean XML headers to prevent parsing errors
+          find app/src/main/res -name "*.xml" -exec sed -i "s/^[ \t]*<?xml/<?xml/" {} + 2>/dev/null || true
+
       - name: Build Debug APK
-        run: |
-          gradle :app:assembleDebug --stacktrace --no-daemon
+        run: gradle :app:assembleDebug --stacktrace --no-daemon
 
-      # Uploads the APK so you can download it
       - name: Upload FocusLock APK
         uses: actions/upload-artifact@v4
         with:
           name: FocusLock-v3.0.0-APK
           path: |
             app/build/outputs/apk/debug/*.apk
-            **/build/outputs/apk/debug/app-debug.apk
+            **/build/outputs/apk/debug/*.apk
           retention-days: 14
