@@ -1,4 +1,4 @@
-name: Build Android FocusLock APK
+name: Build FocusLock APK
 
 on:
   push:
@@ -23,46 +23,16 @@ jobs:
         with:
           gradle-version: 8.7
 
-      - name: Configure Android Project & Clean XMLs
+      - name: Prepare Project
         run: |
-          echo "==> Locating files and structuring Android project..."
-          
-          # 1. Search for nested directories (if files were uploaded in a subfolder)
-          APP_DIR=$(find . -maxdepth 3 -type d -name "app" | head -n 1)
-          if [ -n "$APP_DIR" ] && [ "$APP_DIR" != "./app" ]; then
-            echo "Found app folder at $APP_DIR, structuring project..."
-            cp -r "$APP_DIR"/* ./app/ 2>/dev/null || cp -r "$APP_DIR" ./app
-          fi
-
-          # 2. Ensure app directory structure exists
           mkdir -p app/src/main/java/com/vidhya/focuslock
           mkdir -p app/src/main/res/values app/src/main/res/layout app/src/main/res/drawable
 
-          # 3. Ensure Kotlin files are mapped to app/src/main/java
           find . -name "*.kt" -not -path "./app/src/main/java/*" -exec cp {} app/src/main/java/com/vidhya/focuslock/ \; 2>/dev/null || true
-
-          # 4. Ensure AndroidManifest.xml is in app/src/main/
           find . -name "AndroidManifest.xml" -not -path "./app/src/main/*" -exec cp {} app/src/main/AndroidManifest.xml \; 2>/dev/null || true
 
-          # 5. Automatically remove any leading whitespace/indentation before <?xml in all XML files
-          python3 -c "
-import glob
-for p in glob.glob('**/*.xml', recursive=True):
-    try:
-        with open(p, 'r', encoding='utf-8', errors='ignore') as f:
-            c = f.read()
-        idx = c.find('<?xml')
-        if idx != -1:
-            c = c[idx:]
-        elif '<' in c:
-            c = c[c.find('<'):]
-        with open(p, 'w', encoding='utf-8') as f:
-            f.write(c.strip() + '\n')
-    except Exception:
-        pass
-"
+          find . -name "*.xml" -exec sed -i 's/^[ \t]*<?xml/<?xml/' {} + 2>/dev/null || true
 
-          # 6. Write root build.gradle.kts
           cat << 'EOF' > build.gradle.kts
           plugins {
               id("com.android.application") version "8.5.2" apply false
@@ -70,17 +40,10 @@ for p in glob.glob('**/*.xml', recursive=True):
           }
           EOF
 
-          # 7. Write root settings.gradle.kts
           cat << 'EOF' > settings.gradle.kts
           pluginManagement {
               repositories {
-                  google {
-                      content {
-                          includeGroupByRegex("com\\.android.*")
-                          includeGroupByRegex("com\\.google.*")
-                          includeGroupByRegex("androidx.*")
-                      }
-                  }
+                  google()
                   mavenCentral()
                   gradlePluginPortal()
               }
@@ -96,14 +59,12 @@ for p in glob.glob('**/*.xml', recursive=True):
           include(":app")
           EOF
 
-          # 8. Write root gradle.properties
           cat << 'EOF' > gradle.properties
           org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
           android.useAndroidX=true
           android.nonTransitiveRClass=true
           EOF
 
-          # 9. Write app/build.gradle.kts
           cat << 'EOF' > app/build.gradle.kts
           plugins {
               id("com.android.application")
@@ -151,11 +112,9 @@ for p in glob.glob('**/*.xml', recursive=True):
       - name: Build Debug APK
         run: gradle :app:assembleDebug --stacktrace --no-daemon
 
-      - name: Upload FocusLock APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: FocusLock-v3.0.0-APK
-          path: |
-            app/build/outputs/apk/debug/*.apk
-            **/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/*.apk
           retention-days: 14
