@@ -1,4 +1,4 @@
-name: Build FocusLock APK
+name: Build Android FocusLock Ocean APK
 
 on:
   push:
@@ -15,90 +15,112 @@ jobs:
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
           distribution: 'temurin'
+          java-version: '17'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-version: 8.7
+          gradle-version: '8.7'
 
-      - name: Overwrite & Enforce 100% Deep Ocean Sanctuary Theme
+      - name: Prepare Deep Ocean Sanctuary Android Project
         run: |
+          set -e
+          echo "=== Configuring Android Deep Ocean Sanctuary Project ==="
+
+          # 1. Create standard Android directory tree
           mkdir -p app/src/main/java/com/vidhya/focuslock
-          mkdir -p app/src/main/res/values app/src/main/res/layout app/src/main/res/drawable app/src/main/res/xml app/src/main/res/anim app/src/main/res/mipmap-anydpi-v26
+          mkdir -p app/src/main/res/values
+          mkdir -p app/src/main/res/drawable
+          mkdir -p app/src/main/res/mipmap-anydpi-v26
+          mkdir -p app/src/main/res/anim
+          mkdir -p app/src/main/res/layout
+          mkdir -p app/src/main/res/xml
 
-          # 1. Transform any existing forest files to Ocean Sanctuary in-place
-          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/Forest/Ocean/g' {} + 2>/dev/null || true
-          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/forest/ocean/g' {} + 2>/dev/null || true
-          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/Garden/Ocean/g' {} + 2>/dev/null || true
-          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/garden/ocean/g' {} + 2>/dev/null || true
-          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/🌲/🌊/g' {} + 2>/dev/null || true
-          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/🌸/🪸/g' {} + 2>/dev/null || true
-          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/Ancient Oak/Blue Whale/g' {} + 2>/dev/null || true
-          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/Alpine Pine/Coral Dolphin/g' {} + 2>/dev/null || true
-          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/Weeping Willow/Sea Turtle/g' {} + 2>/dev/null || true
-          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/petDog1/marineTurtle/g' {} + 2>/dev/null || true
-          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/butterfly1/marineJellyfish/g' {} + 2>/dev/null || true
-          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/tabBtnGarden/tabBtnOcean/g' {} + 2>/dev/null || true
-          find . -type f \( -name "*.kt" -o -name "*.xml" \) -exec sed -i 's/viewGardenTab/viewOceanTab/g' {} + 2>/dev/null || true
-
-          # 2. Map files into place
-          find . -name "*.kt" -not -path "./app/src/main/java/*" -exec cp {} app/src/main/java/com/vidhya/focuslock/ \; 2>/dev/null || true
-          find . -name "activity_*.xml" -o -name "item_*.xml" | while read -r f; do cp "$f" app/src/main/res/layout/ 2>/dev/null || true; done
-          find . -name "bg_*.xml" -o -name "ic_*.xml" | while read -r f; do cp "$f" app/src/main/res/drawable/ 2>/dev/null || true; done
-          find . -name "*service_config.xml" -o -name "*admin_receiver.xml" | while read -r f; do cp "$f" app/src/main/res/xml/ 2>/dev/null || true; done
-          find . -name "AndroidManifest.xml" -not -path "./app/src/main/*" -exec cp {} app/src/main/AndroidManifest.xml \; 2>/dev/null || true
+          # 2. Locate and move any user-uploaded files from subfolders to proper locations
+          find . -name "*.kt" -not -path "*/app/src/main/java/*" -exec cp -u {} app/src/main/java/com/vidhya/focuslock/ \; 2>/dev/null || true
+          find . -name "activity_*.xml" -not -path "*/res/layout/*" -exec cp -u {} app/src/main/res/layout/ \; 2>/dev/null || true
+          find . -name "item_*.xml" -not -path "*/res/layout/*" -exec cp -u {} app/src/main/res/layout/ \; 2>/dev/null || true
+          find . -name "bg_*.xml" -not -path "*/res/drawable/*" -exec cp -u {} app/src/main/res/drawable/ \; 2>/dev/null || true
+          find . -name "ic_launcher*.xml" -not -path "*/res/drawable/*" -not -path "*/res/mipmap*/*" -exec cp -u {} app/src/main/res/drawable/ \; 2>/dev/null || true
+          find . -maxdepth 2 -name "AndroidManifest.xml" -not -path "*/app/src/main/*" -exec cp -u {} app/src/main/AndroidManifest.xml \; 2>/dev/null || true
 
           # 3. Write Ocean Sanctuary Animation XMLs
-          cat << 'EOF' > app/src/main/res/anim/butterfly_float.xml
+          cat << 'EOF' > app/src/main/res/anim/ocean_float.xml
+          <?xml version="1.0" encoding="utf-8"?>
           <set xmlns:android="http://schemas.android.com/apk/res/android" android:interpolator="@android:anim/linear_interpolator" android:repeatMode="reverse" android:repeatCount="infinite">
-              <translate android:fromXDelta="0" android:toXDelta="10dp" android:fromYDelta="0" android:toYDelta="-15dp" android:duration="1200" />
+              <translate android:fromXDelta="0" android:toXDelta="8dp" android:fromYDelta="0" android:toYDelta="-12dp" android:duration="1400" />
           </set>
           EOF
 
-          cat << 'EOF' > app/src/main/res/anim/sparkle_pulse.xml
+          cat << 'EOF' > app/src/main/res/anim/bubble_rise.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <set xmlns:android="http://schemas.android.com/apk/res/android" android:repeatMode="restart" android:repeatCount="infinite">
+              <translate android:fromYDelta="0dp" android:toYDelta="-40dp" android:duration="2000" />
+              <alpha android:fromAlpha="0.3" android:toAlpha="1.0" android:duration="1000" />
+          </set>
+          EOF
+
+          cat << 'EOF' > app/src/main/res/anim/wave_sway.xml
+          <?xml version="1.0" encoding="utf-8"?>
           <set xmlns:android="http://schemas.android.com/apk/res/android" android:repeatMode="reverse" android:repeatCount="infinite">
-              <scale android:fromXScale="0.8" android:toXScale="1.2" android:fromYScale="0.8" android:toYScale="1.2" android:pivotX="50%" android:pivotY="50%" android:duration="800" />
-              <alpha android:fromAlpha="0.6" android:toAlpha="1.0" android:duration="800" />
+              <rotate android:fromDegrees="-3" android:toDegrees="3" android:pivotX="50%" android:pivotY="100%" android:duration="1600" />
           </set>
           EOF
 
-          cat << 'EOF' > app/src/main/res/anim/plant_breeze.xml
+          cat << 'EOF' > app/src/main/res/anim/bioluminescent_pulse.xml
+          <?xml version="1.0" encoding="utf-8"?>
           <set xmlns:android="http://schemas.android.com/apk/res/android" android:repeatMode="reverse" android:repeatCount="infinite">
-              <rotate android:fromDegrees="-3" android:toDegrees="3" android:pivotX="50%" android:pivotY="100%" android:duration="1500" />
+              <scale android:fromXScale="0.85" android:toXScale="1.15" android:fromYScale="0.85" android:toYScale="1.15" android:pivotX="50%" android:pivotY="50%" android:duration="900" />
+              <alpha android:fromAlpha="0.5" android:toAlpha="1.0" android:duration="900" />
           </set>
           EOF
 
-          # 4. Write Ocean Sanctuary Values & Colors
+          # 4. Write Pure Deep Ocean Values & Colors
           cat << 'EOF' > app/src/main/res/values/strings.xml
+          <?xml version="1.0" encoding="utf-8"?>
           <resources>
               <string name="app_name">FocusLock Ocean Sanctuary</string>
           </resources>
           EOF
 
           cat << 'EOF' > app/src/main/res/values/colors.xml
+          <?xml version="1.0" encoding="utf-8"?>
           <resources>
               <color name="white">#FFFFFFFF</color>
-              <color name="emerald_primary">#06B6D4</color>
-              <color name="emerald_dark">#0C4A6E</color>
-              <color name="bg_dark">#030712</color>
+              <color name="ocean_primary">#06B6D4</color>
+              <color name="ocean_secondary">#38BDF8</color>
+              <color name="ocean_accent">#00F5D4</color>
+              <color name="ocean_dark">#0B192C</color>
+              <color name="ocean_surface">#0F1E36</color>
+              <color name="ocean_card">#07192C</color>
+              <color name="ocean_border">#0E3A5D</color>
+              <color name="ocean_abyss">#020817</color>
+              <color name="ocean_coral">#FF6B8B</color>
+              <color name="ocean_gold">#FBBF24</color>
+              <color name="bg_dark">#020817</color>
+              <color name="text_secondary">#94A3B8</color>
           </resources>
           EOF
 
           cat << 'EOF' > app/src/main/res/values/themes.xml
+          <?xml version="1.0" encoding="utf-8"?>
           <resources>
               <style name="Theme.FocusLock" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-                  <item name="colorPrimary">#06B6D4</item>
-                  <item name="colorSecondary">#38BDF8</item>
-                  <item name="android:statusBarColor">#030712</item>
+                  <item name="colorPrimary">@color/ocean_primary</item>
+                  <item name="colorSecondary">@color/ocean_secondary</item>
+                  <item name="android:statusBarColor">@color/ocean_abyss</item>
+                  <item name="android:navigationBarColor">@color/ocean_abyss</item>
               </style>
-              <style name="Theme.FocusLock.Fullscreen" parent="Theme.FocusLock"><item name="android:windowFullscreen">true</item></style>
+              <style name="Theme.FocusLock.Fullscreen" parent="Theme.FocusLock">
+                  <item name="android:windowFullscreen">true</item>
+              </style>
               <style name="Theme.FocusLock.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog" />
           </resources>
           EOF
 
           cat << 'EOF' > app/src/main/res/xml/accessibility_service_config.xml
+          <?xml version="1.0" encoding="utf-8"?>
           <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
               android:accessibilityEventTypes="typeWindowStateChanged|typeWindowsChanged"
               android:accessibilityFeedbackType="feedbackGeneric"
@@ -109,31 +131,38 @@ jobs:
           EOF
 
           cat << 'EOF' > app/src/main/res/xml/device_admin_receiver.xml
+          <?xml version="1.0" encoding="utf-8"?>
           <device-admin xmlns:android="http://schemas.android.com/apk/res/android"><uses-policies><force-lock /></uses-policies></device-admin>
           EOF
 
           cat << 'EOF' > app/src/main/res/drawable/bg_card.xml
+          <?xml version="1.0" encoding="utf-8"?>
           <shape xmlns:android="http://schemas.android.com/apk/res/android"><solid android:color="#07192C"/><corners android:radius="16dp"/><stroke android:width="1dp" android:color="#0E3A5D"/></shape>
           EOF
 
           cat << 'EOF' > app/src/main/res/drawable/bg_search.xml
+          <?xml version="1.0" encoding="utf-8"?>
           <shape xmlns:android="http://schemas.android.com/apk/res/android"><solid android:color="#030E1B"/><corners android:radius="12dp"/><stroke android:width="1dp" android:color="#0C4A6E"/></shape>
           EOF
 
           cat << 'EOF' > app/src/main/res/drawable/bg_pill.xml
+          <?xml version="1.0" encoding="utf-8"?>
           <shape xmlns:android="http://schemas.android.com/apk/res/android"><solid android:color="#0C4A6E"/><corners android:radius="20dp"/></shape>
           EOF
 
           cat << 'EOF' > app/src/main/res/drawable/ic_launcher_foreground.xml
+          <?xml version="1.0" encoding="utf-8"?>
           <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108"><path android:fillColor="#38BDF8" android:pathData="M30,30h48v48h-48z" /></vector>
           EOF
 
           cat << 'EOF' > app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
-          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@color/emerald_dark" /><foreground android:drawable="@drawable/ic_launcher_foreground" /></adaptive-icon>
+          <?xml version="1.0" encoding="utf-8"?>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@color/ocean_dark" /><foreground android:drawable="@drawable/ic_launcher_foreground" /></adaptive-icon>
           EOF
 
           cat << 'EOF' > app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
-          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@color/emerald_dark" /><foreground android:drawable="@drawable/ic_launcher_foreground" /></adaptive-icon>
+          <?xml version="1.0" encoding="utf-8"?>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@color/ocean_dark" /><foreground android:drawable="@drawable/ic_launcher_foreground" /></adaptive-icon>
           EOF
 
           find . -name "*.xml" -exec sed -i 's/^[ \t]*<?xml/<?xml/' {} + 2>/dev/null || true
@@ -176,8 +205,8 @@ jobs:
                   applicationId = "com.vidhya.focuslock"
                   minSdk = 26
                   targetSdk = 34
-                  versionCode = 5
-                  versionName = "3.5.0-OceanSanctuary"
+                  versionCode = 6
+                  versionName = "3.6.0-DeepOceanSanctuary"
               }
               buildTypes {
                   release { isMinifyEnabled = false }
@@ -202,9 +231,9 @@ jobs:
       - name: Build Debug APK
         run: gradle :app:assembleDebug --stacktrace --no-daemon
 
-      - name: Upload Ocean Sanctuary APK
+      - name: Upload Deep Ocean Sanctuary APK
         uses: actions/upload-artifact@v4
         with:
-          name: FocusLock-v3.5.0-DeepOceanSanctuary-APK
+          name: FocusLock-v3.6.0-DeepOceanSanctuary-APK
           path: app/build/outputs/apk/debug/*.apk
           retention-days: 14
