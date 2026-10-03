@@ -27,47 +27,16 @@ jobs:
         with:
           gradle-version: 8.7
 
-      # Configures Google & Maven repositories and plugin versions automatically
-      - name: Configure Gradle Repositories & Plugins
+      # Configures Google & Maven repositories cleanly without EOF blocks
+      - name: Configure Root Gradle Files
         run: |
-          cat << 'EOF' > settings.gradle.kts
-          pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-          }
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
-          rootProject.name = "FocusLock"
-          if (file("app").exists() && file("app/build.gradle.kts").exists()) {
-              include(":app")
-          }
-          EOF
+          printf "pluginManagement {\n    repositories {\n        google()\n        mavenCentral()\n        gradlePluginPortal()\n    }\n}\ndependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)\n    repositories {\n        google()\n        mavenCentral()\n    }\n}\nrootProject.name = \"FocusLock\"\ninclude(\":app\")\n" > settings.gradle.kts
+          printf "plugins {\n    id(\"com.android.application\") version \"8.5.2\" apply false\n    id(\"org.jetbrains.kotlin.android\") version \"1.9.24\" apply false\n}\n" > build.gradle.kts
 
-          if [ -d "app" ] && [ -f "app/build.gradle.kts" ]; then
-            cat << 'EOF' > build.gradle.kts
-            plugins {
-                id("com.android.application") version "8.5.2" apply false
-                id("org.jetbrains.kotlin.android") version "1.9.24" apply false
-            }
-            EOF
-          fi
-
-      # Compiles the Debug APK
+      # Compiles the FocusLock Debug APK
       - name: Build Debug APK
         run: |
-          if [ -d "app" ] && [ -f "app/build.gradle.kts" ]; then
-            gradle :app:assembleDebug --stacktrace --no-daemon
-          else
-            gradle assembleDebug --stacktrace --no-daemon
-          fi
+          gradle :app:assembleDebug --stacktrace --no-daemon
 
       # Uploads the APK so you can download it
       - name: Upload FocusLock APK
@@ -75,6 +44,6 @@ jobs:
         with:
           name: FocusLock-v3.0.0-APK
           path: |
-            **/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/debug/*.apk
             **/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
