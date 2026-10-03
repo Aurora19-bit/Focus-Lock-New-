@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repository
+      # Step 1: Download your code
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -24,15 +24,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # Step 3: Set up Android SDK & automatically accept licenses
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      # Step 4: Setup Gradle 8.7 (compatible with AGP 8.5.2 & Java 17)
+      # Step 3: Set up Gradle 8.7
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.7'
+
+      # Step 4: Accept Android SDK licenses using the pre-installed SDK
+      - name: Accept Android SDK Licenses
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       # Step 5: Build Debug APK
       - name: Build Debug APK
@@ -44,7 +45,7 @@ jobs:
             gradle assembleDebug --no-daemon --stacktrace
           fi
 
-      # Step 6: Upload APK file so you can download it
+      # Step 6: Upload the generated APK so you can download it
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         if: always()
