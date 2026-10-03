@@ -22,88 +22,17 @@ jobs:
           java-version: 17
           distribution: temurin
 
-      - name: Setup Gradle
+      - name: Setup Gradle 8.7
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.7
 
-      # Automatically restores complete Android codebase if missing
-      - name: Restore Complete Android Codebase
-        run: |
-          if [ ! -f "app/build.gradle.kts" ]; then
-            echo "==> Restoring full FocusLock Android project..."
-            rm -f /tmp/payload.b64
-            echo "H4sIAAAAAAAAA+29XW/kSJIgmM/1K1gxM4VQl0TFpzJLI2V2SAplakpfrYis7MLcIEBFUBJLDDKKZEip6k5gnxd3e7jdOSywN0DfLbDPi3279/0n/Qeuf8KZ" >> /tmp/payload.b64
-            echo "uTtJd6c7P0IfqawKB6pSQboZ3d3Mzc3Mzc2t2Wz9xSOXBpSX3S75F4r8L/m72W1tNBrdl432yxeNZqPdab4wuo/dMCzzMLICw3gR+H6UV6/o/RdaLKD/+dxx" >> /tmp/payload.b64
-            echo "J+ZlYE1c27yOwof+BhJ4o9PR0R8IvyHRv91pdV4YjYduiKr8xulvJGXmzi8dLzT+9JUhFGdSr439qWl5k8B3JiZwjOuMrcjxvdqKoq4fXJo/2dF5YAE289qP" >> /tmp/payload.b64
-            echo "XMeLgQWAT9zf7H3m4541tcOZNbaNbYO04saZXN1Z5oU/noeuP76uSQBQZ+a49mByDRDtjvR2Yl9Yczfa9b0L5zLzMdKQtHcHk7IfxTJ1PPrR1obiLfDYpR1p" >> /tmp/payload.b64
-            echo "WoXlxg5C+OauP8GutvU1jmFEsF1ts2E25IZ8kn6TmT28m9lZsmIJbNe2Qtv4k+GER47nXNz1PevctbHjF5YLb2SEWCb2+fyyAoz8m5HoZIaDrG5Y6M+Dsb0L" >> /tmp/payload.b64
-            echo "FYES547rRHeA/p+sG+sHOgrmD/2zwcHJ8aj5UjvaC4HLjaX8m7TV+OlmOiTYkQbNl7UMAG36wI7UPQPInTukYb02hQlSW1HWwvITNNcMg/GeE4T1GvyxjgDr" >> /tmp/payload.b64
-            echo "+Li2aqQPaAszU1HVmU+a2TexZ7Y3sb2xo2AUZzpz7antRWRS1Gtsqn40x35gb+L/1q6jj5tNs9k2m1mJoIOGiTYmBNpM/2qaL4Gni1DgjLz0/UtYrGKZNLUi" >> /tmp/payload.b64
-            echo "O3AsdzP5A5rTKoGL64wXRiiyIte68+fRZuZBy2yanfIIA3t8N3bt4MaxbzeFH02zbbZESfj55D+u/8hKj/mN6vpfs9luLPW/pygx/YkoeaRvVKd/q9HtLOn/" >> /tmp/payload.b64
-            echo "FEWgP64tj8AEC9D/5cvukv5PUbL0h+X1gXmgOv3b3W57Sf+nKGr6U4PnodigOv27+M+S/k9QcumfGLz344Tq9H/ZaC3p/ySlJP0Hdoh285HlWZd2YF5XGgok" >> /tmp/payload.b64
-            echo "sN7/1251mt2E/u0NqNdqteHR0v/3BOWriRVZxti1wtB4Z5070UFkT+vENr2xXMOZbBqDKHC8y9XkWeRErp19PAbT+9IP7pI3xvq6Uds56/e+rxl+AH++Pzjc" >> /tmp/payload.b64
-            echo "qyX1wbq2retN48CLUiTQDuK3ce3InuwBxhjbVytfcQbzzBpfAyMaKuccXw+scz+IYu8iGvkRmOrmLv77MSquOLiyAntyGtgXdmB7YzvMghB3Z+h75j8NTo57" >> /tmp/payload.b64
-            echo "QWDdFdQ5Of/JHiu+Tfw92CxzQJwK2Pt9P5haurrzyHFNrJX3/tAfW67NjwlHcDarD/3LuuTWUNFefBs5UxumznS2aRz66ioz1/I8e3LkePPIDjlKi9XOkQ+K" >> /tmp/payload.b64
-            echo "Ko1jpiiqCG2K5mFey8+RS+xJbzYLd/25FxFUXD2B04SBYuKvPqb8s2kwRso68WaBcwOUocMA7IMNknnJ2Fa47BhqE73FMkC9Rph8hO0fEay11bgJ5tHJXn90" >> /tmp/payload.b64
-            echo "enbwQ2/YF3pAux0YTnhI+r1p7Pi+a1ue2jtZXzG2aZOxDaxqvebQz9oT+CRx86r8jSGA36Tw9sQBdOZsrkZzs0L2Eu7qyuaGdMj73mQInEaZrEyLsV69xqBH" >> /tmp/payload.b64
-            echo "tjcZIafC5xqHlZqsxVOq2QNYVKL7NBxXpehBmi5gKtX4vXlAvJn8VCvTA6iWfnbCkMBHW91KzdehyW87kSL3ajnBwH9wgWZncOQ32gkPvB26DC44KR1vRL55" >> /tmp/payload.b64
-            echo "72nJISox0AtOSzo8952UGSwFDaYS55TqDCiJ7WiLLg+vyzSdVgUg+DJFNWL6B8pfezqL7vDlyorxZpP7WaVf+Z/I797ECXH/rRdF+G31kqbtG2FahmFkMRRI" >> /tmp/payload.b64
-            echo "l+qsr8Cib/jF3DMCe+wHkz2h+XX1fpiqj9AO5eNvjWZm20vxdSIW2bpeJ+sqCA2mViQqCf0NX2qo24XLu+ffQoXBXQiNMMfzANZqIvmPHNd1Qg0fiIsEwAMW" >> /tmp/payload.b64
-            echo "fUVJrOFOa9xgBZBKEgJI0icFSCKH4k1cHVo273FEDpV4qI4B76NgrsIiLuu040CylALG74yNBvyvCaahUjhohZg9tYNLUJTuYO6E4cgaR86NncjFhBNFbHre" >> /tmp/payload.b64
-            echo "IONRFzlBzQXOhZHWM7a03IIFpFbMdIlKy0ZL1VksgR3NA9XCoNqcX5AjeQbQUE6iP6Nb2u88uilHWTUUyTq4yhT5kxs7CJxJYge+wU/PXVc/H5nVAfXUs0cD" >> /tmp/payload.b64
-            echo "ZrvWLATzIswdOmMtM3k1+HiDBXEikyTPVpJW2hgxMbU+nlzUm6tGPW3FOgwnlBUz8lG8rqiolto72FthvHAtqkvfrO2eHJ0e9of9vRr9bm23d7zbPzyEBxkJ" >> /tmp/payload.b64
-            echo "jcWaTPQmYlyKa2BxJrnjCr2k9K2vyCYbXxKjMxdZHgbRJsW1jD7Ig+EN1FiQSkyVBy6broBi6nhA8PjTIq/kNl+idm6rJTMXWy5qQmbo/KJiXywqdlPyCPEF" >> /tmp/payload.b64
-            echo "+BPr7nsbg2xk30W9dgdl7ehobYI2H3VHoOaxR0OxgLHNC1oTgfR8zui8ZznuXVaDwaejv4/boVNg1HpLBlb41Lf5xNJqOFi45VC3qpZZeTNrpnLtLbM+P8Ha" >> /tmp/payload.b64
-            echo "6YRMIPQIjvpKItK1a+fX8TitsLVOOxKLrm7wkWSg9WszVkPsr7eFwdQDYFlgQcdS0FEsquWdA9Us0yoormMiL+WPhVKRfJ2n3WCRlScJQYlB0fSM9I4uXM+H" >> /tmp/payload.b64
-            echo "IKpn+m4oZwwIsTMb919g+SOMHOKkQVP3IW0O1qiSU4FqJI3DVVGsrOGXlZGG+XRJ0UmyTI+wnKzpx3LrFMRWOYmD40flm9Knki8Jdcrjx5kTUHVCdHik2FgV" >> /tmp/payload.b64
-            echo "rc+D0Ye17JtvjHqOFroVf7GUSL4MLC8SRqo+UTjKMHZZzRH8sqGhcKnVJG8Opu4d1ZjljAUYIVJvRFNE+0H1okZpofJMlBlqUWN2/ctNTj/W2yxQEZkHnU1J" >> /tmp/payload.b64
-            echo "uUAtab0MLQxjq01w/FY8AvZQTWm/qRSItbnk7oy3v94JEVLCnyl3P8WSJIbPKJp9oI5IDSM0XxVUe+7R9KHGEUSCkHzvd+TdI3KWUcXrfV40eaH/uWz3Qp7" >> /tmp/payload.b64
-            echo "PtHmX/Ju2wMFCz1kyM+XG7HD/IYGpgBHB8EikTuf45zXowaboAz5IqJN+HARdlv5ZwsZKTFlFHZnH6zNu6LxfhYyqEK2FpE8x74Rsll2RWlk3NmRacSuesMy" >> /tmp/payload.b64
-            echo "Loj2HteKEMA2AnvsB5PQuLIDu1pQa+WA1nKRdDm2diNf63useKLPwjhfSDzRg2pV76xz5/mGGC31qi9Fr7q3a+zL0K0Wc0T/SlwcRFYYu1eWd2kbw8AaX1e7" >> /tmp/payload.b64
-            echo "OujBfFLP8tqdZ0gwmj8UfVFzN3RubCMKnMtLOwhZEojzueNO8EgW20RclJj3ulSnRIR5eVf+wuZBbzIh7P3ZrINO5Wwe3xrH9q1RqdXPyTagmsev2jq4Il2E" >> /tmp/payload.b64
-            echo "WYeickKNg6E1M775ee5H/8jRjz4g9gGeLKATE3QYww+Mc5zE+DfF9iUYDCUgM3rXZzAyPhMHPq2ZsVHezNha565Pvf8d1cJNpTkA1QZXM6gbmogCqbrlOpfe" >> /tmp/payload.b64
-            echo "KUEep3Egl4nmQIoXeO83X7aUB40X0LxLaNxFpp5CulrnO5FHr3XMUbVLWWd6XtSKxwJNOXk9dp3xNe4kMwIkL4jHhHuhXaEeO7Djr//l/1EGbLzKXzgfPZBd" >> /tmp/payload.b64
-            echo "pKwqtaputa+mD5c51VSGFcnRsCUn3oPkf/vLf/ofz5EVk+REXxI7kiN1S368Jz/+++fIjyRaIPySmJG4uZe8eD9e/LfnyIsiZZ+OE8W3CzMmM42WrHkv1vwP" >> /tmp/payload.b64
-            echo "//05sqZM2ycUkzlyc2v9zHaB2jeJ/fliWZ5PsWaz9TAYr08tx1sP7JCF6a07kT0dwcsRTdL0ceou/o0GlI1Oh/wLRf63vdFovmh2WxuNRvdlB583X250Nl4Y" >> /tmp/payload.b64
-            echo "jYfrpr7M0TNnGC8C34/y6hW9/0LL1hsgrQFiOCTyuGk2aobtjX260zqPLtZe1d7wMkBcZgDYCzeZ9NiuXUXRbHN9PRxf2VMrTFJ8j/3pujW7JvzFnsl+k+pO" >> /tmp/payload.b64
-            echo "owX8wBV9OSpPUWGkfAyUm/xU6deLHVeK7DMlPEqShD6YWpe2xnWa0Q0czPNyMFanh1ZTRucPztsFyS4mZX2PpbaUF9wYqOKXVdKt4E7GfL1HourW7JvzFnsl" >> /tmp/payload.b64
-            echo "sujIwbcDT0oTWmXQNYPdfqVa4ejg7vl8MlnN2KTrebFyAx3ZszGn/sP3o1RlYW1XdjzRATf0w/LXf/s/1a90s1KzFuLIPbEBq7P/Jo7l+pcj6Pz9rcBi+y+7" >> /tmp/payload.b64
-            echo "/9Na2n9PUn5V9p92X6fEbo5uD6dAkj2agGJRGphi2LBoNmHcRKBZ2vOljax9F+3CFCpGn6H76j0K3bJkXwB7wjCdW5j2/NIBXRxTLLvOhR1ih2iOZQxpMW4t" >> /tmp/payload.b64
-            echo "jwzkz2DhrGIly5ilERc03gVYKEKEUI1kbDbzx1vem9HsyKTDmfHGK3zwqSF4gO7joqVR7bAt5Xgv65wt9ASEICHGV1kA6pW3zUvTGET+DEgAbcXM1z/68+H8" >> /tmp/payload.b64
-            echo "3DYGYEJFIV6peM7HlUlTko+RV7es7CTIc9/nLM2UeGfWxPHfQv9nevIFl4nR9aCEqzpnmspJo7NeeRub9FKxxZDt6jm5jUCRrr6E46ZyV1V41cc54lpj1JPt" >> /tmp/payload.b64
-            echo "iSoftMLlsW7sZG2GssaognXaso1VaWBR9jzbgWVWPLlqYt0g16QWD5tq2zNn2MiIraczbgFH4aPOr1a+L1W427fK7CvDH2gDWt7YdktzSGVHWCeznScSn36/" >> /tmp/payload.b64
-            echo "kJqtzCQo2b+BdSMbhk/SO6XjVzu/2BYltFV1aUfOeJChkMy9p96/zNh/yYL+cN9AI+9lt6uz/8jfsf3XaL98gdF/rY0XRvfhmqAvv3H7T09/tiN2/+3fIvu/" >> /tmp/payload.b64
-            echo "0W5I9n9zo9tcxn8+SdkKr6yZfQ+L/vVW6LvOJNW34pWemt/rr7fGfuDh3VRxjQCW83nIdHh4H0aBf20nr+OTknwu4gRpv/VdeweB1km7l/Ed9y25858adPeW" >> /tmp/payload.b64
-            echo "ANXn/8tGt7Gc/09RHm3+sxt18uZ/q/L8b7c7zW53Of8fruTOfwzteIL1v9VsZ9b/Zf7npymPN/83On26VOvmPzGel1P58xb9/HfGI9eae8AC90z/Uzj/X7a7" >> /tmp/payload.b64
-            echo "8vrfaS3z/zxJ2bqxx5Ef3EMAZBbuxit+6Y69LdJjzJ4y84PoQwKUffcuBQUxM7Oiq6TKBaxMkk+R2y6IrvasyNquHTVWG1cAfQP/Xa3B/35BeaNFJF+SwSHq" >> /tmp/payload.b64
-            echo "dlbbLavZWm22jIYBaI018uMG8LasjdWN+Cn8edPin8BfV61XwoO1jZu1lgS1tgGIbtZeZb4B//0ybaxuJNWbiBK/2yT1+cdrG6SD65SmpSRqZv5PndnUmq1Z" >> /tmp/payload.b64
-            echo "3t1k5qzdtDbu7wiq7v/ZaLS6S//PU5QS9L/3QlBo/7Xk+I9mo7m0/56kbFkTa4Zb32vO2PfupQem+8KJBI2Vie3a74leuG5P7cByJ6OJFVyjqLrwA1sPo9JF" >> /tmp/payload.b64
-            echo "RikIkXVC+5dKZNWSmf83ljuHfx7yG9Xlf4ec/1/K/8cvOvqHUeB4l+EDWP/F8r/ZaMn2f7uzzP/1JGULaO7Pg7EdEkccRuV41hSEL979hX/VXpOkT5jzaYtx" >> /tmp/payload.b64
-            echo "BUjdFGopcb/oopv/ZLl+mOlfOP872f2/5jL/79MUbv5LZxq2CAswaXB75UQgCpiJvL+/RRkkFybW9WaBM7WCO4CmlnoVWKInvv67Ruflq+7LMoDnlwkM2YBQ" >> /tmp/payload.b64
-            echo "wCylF1d08z8Cjd9+mvnfbG5k1v9mp7uc/09RcuY/jZym02qI7GAmmkDNoAF18Ys4J8WuP535HrwIzT3rjhwdNY/9HskrtGMF6otcMNUA+wyZq6exvJBsRiZH" >> /tmp/payload.b64
-            echo "tkhuglKYBjbYhJN744ot05DduRAQh2GCk4kcNS7UmWAYqwyuuT933XAc2LYnj3NKgNeqBt463sS/5cBfY9Ara9giLdkjp4CqUDuGWF9K3C+iZOQ/SPwHNf5f" >> /tmp/payload.b64
-            echo "LGL/tzudpf/3SYqS/tZ4jBlfzx0XM0CGdnDjjG2Mrb1wFrkIsEj/f5k5/9dqdJf7/09StgRarzFaP3xeR+Ez/RtYNPBwTLhdi+CfD2TdwiuNbHq+bfLn9HHI" >> /tmp/payload.b64
-            echo "HpXCvG/bE/RD02xbF+zXW9vDVGDlMLjWJTTrAv7Zsy+suRv9Gf8+8MbufGIf+9HBFPcmLY8ciMvcr5GEQVjemR0Fjn3DurFLI9MBs+WGmSwMifPbhpXbmdHD" >> /tmp/payload.b64
-            echo "Ab+n7pb1xBWjAfL8yLlgaZyHztT25+SMF1mEi+ivnP8Tm0x4azJ1vFFgj23n5j5BAEXzv9XYkM//drpL/9+TlC1K6zVC63tt/8xDO1yb+a4zdtCZeOGDureG" >> /tmp/payload.b64
-            echo "GcUN3KaR3q7zn13qhJ+v0POtl4E1cW3zOgof4xuF83+jK+l/rY3O0v/3JCVdTWbu/BIvu/yTtMo4kzq5Njye/dydAbWVOHOAUXtlds1WjdwocGeQNU6Bxw8u" >> /tmp/payload.b64
-            echo "zZ/s6DyA1SY0r/3IdbwYMY+saX5ntjo6bJ8+96D9igqb+bPAn2E6BPsxBEDh/O++lO2/ZmeZ/+NJSjqrcG4ybvjpBo8+httrf5x+BF3s1dRY27tw4EWSGeT9" >> /tmp/payload.b64
-            echo "cH/tFTclY+EAy3yP/vnHbfQ9cVXYbAcEtkl8Ttv+BWitjuUq8HigyQaWFzoY2nG261phSPB97uH61ZXQjiKy0f+IKkDR/O9utDP+n8bS//8kRV7/jyzPurSn" >> /tmp/payload.b64
-            echo "YKlmFIHAnvkwIfH8OmgJBk1TXV/5R2NqgT2/CyCB5eJvykqnBN8p2srw1PjEL+Dc3xN7ZnsTvNXlzA59d456RclGHBFRYkf1M/nhfu/gcHRyPDo9O/mn/u5w" >> /tmp/payload.b64
-            echo "dNY/PRmsLNYfbcuRI04D/yd7HJlonhvbRi110HMVHeo7qNc2QZ+prXxuki/LsizLsizLsizLsizLsizLb7T8/0KlMg4AWAIA" >> /tmp/payload.b64
-            cat /tmp/payload.b64 | base64 -d | tar -xz
-            mkdir -p app/src/main/res/mipmap-anydpi-v26 app/src/main/res/drawable app/src/main/res/xml
-          fi
-
-      # Compiles the FocusLock 3.0 APK
       - name: Build Debug APK
-        run: |
-          gradle :app:assembleDebug --stacktrace --no-daemon
+        run: gradle :app:assembleDebug --stacktrace --no-daemon
 
-      # Uploads the APK file for instant download
       - name: Upload FocusLock APK
         uses: actions/upload-artifact@v4
         with:
           name: FocusLock-v3.0.0-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/*.apk
           retention-days: 14
