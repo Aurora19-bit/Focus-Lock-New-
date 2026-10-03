@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout your repository code
+      # Step 1: Checkout repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -24,45 +24,33 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # Step 3: Set up Gradle (Works even if gradlew file is missing)
+      # Step 3: Set up Android SDK & automatically accept licenses
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      # Step 4: Setup Gradle 8.7 (compatible with AGP 8.5.2 & Java 17)
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.7'
 
-      # Step 4: Ensure gradlew exists or generate one automatically
-      - name: Prepare Gradle Wrapper
-        run: |
-          if [ -f "./gradlew" ]; then
-            chmod +x ./gradlew
-          elif [ -f "./gradle/wrapper/gradle-wrapper.jar" ]; then
-            gradle wrapper
-            chmod +x ./gradlew
-          fi
-
-      # Step 5: Build Debug APK (handles root or subfolder automatically)
+      # Step 5: Build Debug APK
       - name: Build Debug APK
         run: |
           if [ -f "./gradlew" ]; then
-            ./gradlew assembleDebug --stacktrace --no-daemon
-          elif [ -f "./app/build.gradle.kts" ] || [ -f "./build.gradle.kts" ]; then
-            gradle assembleDebug --stacktrace --no-daemon
+            chmod +x ./gradlew
+            ./gradlew assembleDebug --no-daemon --stacktrace
           else
-            # Find subfolder if files were uploaded inside a nested folder
-            BUILD_DIR=$(find . -maxdepth 3 -name "build.gradle.kts" -o -name "build.gradle" | head -n 1 | xargs dirname)
-            if [ -n "$BUILD_DIR" ]; then
-              echo "Found project in $BUILD_DIR"
-              cd "$BUILD_DIR"
-              gradle assembleDebug --stacktrace --no-daemon
-            else
-              echo "❌ Error: Could not find build.gradle.kts or app files. Please upload your project files to the repository."
-              exit 1
-            fi
+            gradle assembleDebug --no-daemon --stacktrace
           fi
 
-      # Step 6: Upload the generated APK file
+      # Step 6: Upload APK file so you can download it
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: FocusLock-v3.0.0-APK
           path: |
+            app/build/outputs/apk/debug/*.apk
             **/build/outputs/apk/debug/*.apk
           retention-days: 14
