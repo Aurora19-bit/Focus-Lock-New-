@@ -23,13 +23,96 @@ jobs:
         with:
           gradle-version: 8.7
 
-      - name: Prepare Project
+      - name: Prepare Android Project & Resources
         run: |
           mkdir -p app/src/main/java/com/vidhya/focuslock
-          mkdir -p app/src/main/res/values app/src/main/res/layout app/src/main/res/drawable
+          mkdir -p app/src/main/res/values
+          mkdir -p app/src/main/res/layout
+          mkdir -p app/src/main/res/drawable
+          mkdir -p app/src/main/res/xml
+          mkdir -p app/src/main/res/mipmap-anydpi-v26
 
           find . -name "*.kt" -not -path "./app/src/main/java/*" -exec cp {} app/src/main/java/com/vidhya/focuslock/ \; 2>/dev/null || true
           find . -name "AndroidManifest.xml" -not -path "./app/src/main/*" -exec cp {} app/src/main/AndroidManifest.xml \; 2>/dev/null || true
+
+          for d in $(find . -type d -name "values" -not -path "./app/src/main/res/*"); do cp -r "$d"/* app/src/main/res/values/ 2>/dev/null || true; done
+          for d in $(find . -type d -name "xml" -not -path "./app/src/main/res/*"); do cp -r "$d"/* app/src/main/res/xml/ 2>/dev/null || true; done
+          for d in $(find . -type d -name "layout" -not -path "./app/src/main/res/*"); do cp -r "$d"/* app/src/main/res/layout/ 2>/dev/null || true; done
+          for d in $(find . -type d -name "drawable" -not -path "./app/src/main/res/*"); do cp -r "$d"/* app/src/main/res/drawable/ 2>/dev/null || true; done
+          for d in $(find . -type d -name "mipmap*" -not -path "./app/src/main/res/*"); do cp -r "$d"/* app/src/main/res/mipmap-anydpi-v26/ 2>/dev/null || true; done
+
+          cat << 'EOF' > app/src/main/res/values/strings.xml
+          <resources>
+              <string name="app_name">FocusLock</string>
+          </resources>
+          EOF
+
+          cat << 'EOF' > app/src/main/res/values/colors.xml
+          <resources>
+              <color name="white">#FFFFFFFF</color>
+              <color name="emerald_primary">#10B981</color>
+              <color name="emerald_dark">#047857</color>
+              <color name="bg_dark">#0F172A</color>
+          </resources>
+          EOF
+
+          cat << 'EOF' > app/src/main/res/values/themes.xml
+          <resources>
+              <style name="Theme.FocusLock" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+                  <item name="colorPrimary">@color/emerald_primary</item>
+                  <item name="colorSecondary">@color/emerald_primary</item>
+                  <item name="android:statusBarColor">@color/bg_dark</item>
+              </style>
+              <style name="Theme.FocusLock.Fullscreen" parent="Theme.FocusLock">
+                  <item name="android:windowFullscreen">true</item>
+              </style>
+              <style name="Theme.FocusLock.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog" />
+          </resources>
+          EOF
+
+          cat << 'EOF' > app/src/main/res/xml/accessibility_service_config.xml
+          <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+              android:accessibilityEventTypes="typeWindowStateChanged|typeWindowsChanged"
+              android:accessibilityFeedbackType="feedbackGeneric"
+              android:accessibilityFlags="flagDefault|flagIncludeNotImportantViews"
+              android:canRetrieveWindowContent="false"
+              android:description="@string/app_name"
+              android:notificationTimeout="50" />
+          EOF
+
+          cat << 'EOF' > app/src/main/res/xml/device_admin_receiver.xml
+          <device-admin xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-policies>
+                  <force-lock />
+              </uses-policies>
+          </device-admin>
+          EOF
+
+          cat << 'EOF' > app/src/main/res/drawable/ic_launcher_foreground.xml
+          <vector xmlns:android="http://schemas.android.com/apk/res/android"
+              android:width="108dp"
+              android:height="108dp"
+              android:viewportWidth="108"
+              android:viewportHeight="108">
+              <path
+                  android:fillColor="#10B981"
+                  android:pathData="M30,30h48v48h-48z" />
+          </vector>
+          EOF
+
+          cat << 'EOF' > app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@color/emerald_dark" />
+              <foreground android:drawable="@drawable/ic_launcher_foreground" />
+          </adaptive-icon>
+          EOF
+
+          cat << 'EOF' > app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@color/emerald_dark" />
+              <foreground android:drawable="@drawable/ic_launcher_foreground" />
+          </adaptive-icon>
+          EOF
 
           find . -name "*.xml" -exec sed -i 's/^[ \t]*<?xml/<?xml/' {} + 2>/dev/null || true
 
