@@ -23,8 +23,9 @@ jobs:
         with:
           gradle-version: 8.7
 
-      - name: Prepare Android Project & Resources
+      - name: Auto-Structure Android Project & Resources
         run: |
+          # 1. Create standard Android folder structure
           mkdir -p app/src/main/java/com/vidhya/focuslock
           mkdir -p app/src/main/res/values
           mkdir -p app/src/main/res/layout
@@ -32,15 +33,17 @@ jobs:
           mkdir -p app/src/main/res/xml
           mkdir -p app/src/main/res/mipmap-anydpi-v26
 
+          # 2. Automatically locate and map all Kotlin source files
           find . -name "*.kt" -not -path "./app/src/main/java/*" -exec cp {} app/src/main/java/com/vidhya/focuslock/ \; 2>/dev/null || true
+
+          # 3. Automatically map all Android XML layouts and resources
+          find . -name "activity_*.xml" -o -name "item_*.xml" | while read -r f; do cp "$f" app/src/main/res/layout/ 2>/dev/null || true; done
+          find . -name "bg_*.xml" -o -name "ic_*.xml" | while read -r f; do cp "$f" app/src/main/res/drawable/ 2>/dev/null || true; done
+          find . -name "strings.xml" -o -name "colors.xml" -o -name "themes.xml" | while read -r f; do cp "$f" app/src/main/res/values/ 2>/dev/null || true; done
+          find . -name "*service_config.xml" -o -name "*admin_receiver.xml" | while read -r f; do cp "$f" app/src/main/res/xml/ 2>/dev/null || true; done
           find . -name "AndroidManifest.xml" -not -path "./app/src/main/*" -exec cp {} app/src/main/AndroidManifest.xml \; 2>/dev/null || true
 
-          for d in $(find . -type d -name "values" -not -path "./app/src/main/res/*"); do cp -r "$d"/* app/src/main/res/values/ 2>/dev/null || true; done
-          for d in $(find . -type d -name "xml" -not -path "./app/src/main/res/*"); do cp -r "$d"/* app/src/main/res/xml/ 2>/dev/null || true; done
-          for d in $(find . -type d -name "layout" -not -path "./app/src/main/res/*"); do cp -r "$d"/* app/src/main/res/layout/ 2>/dev/null || true; done
-          for d in $(find . -type d -name "drawable" -not -path "./app/src/main/res/*"); do cp -r "$d"/* app/src/main/res/drawable/ 2>/dev/null || true; done
-          for d in $(find . -type d -name "mipmap*" -not -path "./app/src/main/res/*"); do cp -r "$d"/* app/src/main/res/mipmap-anydpi-v26/ 2>/dev/null || true; done
-
+          # 4. Fallback: Create core values if missing
           cat << 'EOF' > app/src/main/res/values/strings.xml
           <resources>
               <string name="app_name">FocusLock</string>
@@ -114,8 +117,10 @@ jobs:
           </adaptive-icon>
           EOF
 
+          # 5. Clean XML headers
           find . -name "*.xml" -exec sed -i 's/^[ \t]*<?xml/<?xml/' {} + 2>/dev/null || true
 
+          # 6. Write Gradle configuration
           cat << 'EOF' > build.gradle.kts
           plugins {
               id("com.android.application") version "8.5.2" apply false
